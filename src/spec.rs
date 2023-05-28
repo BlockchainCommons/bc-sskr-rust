@@ -38,35 +38,35 @@ impl Spec {
     }
 
     pub fn share_count(&self) -> usize {
-        self.groups.iter().map(|g| g.count()).sum()
+        self.groups.iter().map(|g| g.member_count()).sum()
     }
 }
 
 #[derive(Debug, PartialEq)]
 pub struct GroupSpec {
-    threshold: usize,
-    count: usize,
+    member_threshold: usize,
+    member_count: usize,
 }
 
 impl GroupSpec {
-    pub fn new(threshold: usize, count: usize) -> Result<Self, Error> {
-        if count == 0 {
+    pub fn new(member_threshold: usize, member_count: usize) -> Result<Self, Error> {
+        if member_count == 0 {
             return Err(Error::NotEnoughShares);
         }
-        if count > MAX_SHARE_COUNT {
+        if member_count > MAX_SHARE_COUNT {
             return Err(Error::TooManyShares);
         }
-        if threshold > count {
+        if member_threshold > member_count {
             return Err(Error::InvalidGroupThreshold);
         }
-        Ok(Self { threshold, count })
+        Ok(Self { member_threshold, member_count })
     }
 
-    pub fn threshold(&self) -> usize {
-        self.threshold
+    pub fn member_threshold(&self) -> usize {
+        self.member_threshold
     }
 
-    pub fn count(&self) -> usize {
-        self.count
+    pub fn member_count(&self) -> usize {
+        self.member_count
     }
 }

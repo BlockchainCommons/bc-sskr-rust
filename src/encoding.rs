@@ -85,7 +85,7 @@ fn generate_shares(
 
     for (group_index, group) in spec.groups().iter().enumerate() {
         let group_secret = &group_secrets[group_index];
-        let member_secrets = split_secret(group.threshold(), group.count(), group_secret, random_generator)
+        let member_secrets = split_secret(group.member_threshold(), group.member_count(), group_secret, random_generator)
             .map_err(Error::ShamirError)?
             .into_iter().map(Secret::new)
             .collect::<Result<Vec<Secret>, _>>()?;
@@ -96,7 +96,7 @@ fn generate_shares(
                 spec.group_threshold(),
                 spec.group_count(),
                 member_index,
-                group.threshold(),
+                group.member_threshold(),
                 member_secret,
             )
         }).collect();

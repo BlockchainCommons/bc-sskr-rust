@@ -1,6 +1,7 @@
 pub const MIN_SECRET_LEN: usize = bc_shamir::MIN_SECRET_LEN;
 pub const MAX_SECRET_LEN: usize = bc_shamir::MAX_SECRET_LEN;
 pub const MAX_SHARE_COUNT: usize = bc_shamir::MAX_SHARE_COUNT;
+pub const MAX_GROUPS_COUNT: usize = MAX_SHARE_COUNT;
 pub const METADATA_LENGTH_BYTES: usize = 5;
 pub const MIN_SERIALIZE_LENGTH_BYTES: usize = METADATA_LENGTH_BYTES + MIN_SECRET_LEN;
 
@@ -102,7 +103,7 @@ mod tests {
         let group2 = GroupSpec::new(2, 3).unwrap();
         let spec = Spec::new(2, vec![group1, group2]).unwrap();
         let shares = sskr_generate_using(&spec, &secret, &mut rng).unwrap();
-        println!("shares: {:?}", shares);
+        // println!("shares: {:?}", shares);
         assert_eq!(shares.len(), 2);
         assert_eq!(shares[0].len(), 3);
         assert_eq!(shares[1].len(), 3);
@@ -110,12 +111,129 @@ mod tests {
         assert_eq!(flattened_shares.len(), 6);
         for share in &flattened_shares {
             assert_eq!(share.len(), METADATA_LENGTH_BYTES + secret.len());
-            println!("share: {}", hex::encode(share));
+            // println!("share: {}", hex::encode(share));
         }
 
         let recovered_share_indexes = vec![0, 1, 3, 5];
         let recovered_shares = recovered_share_indexes.iter().map(|index| flattened_shares[*index].clone()).collect::<Vec<_>>();
         let recovered_secret = sskr_combine(&recovered_shares).unwrap();
         assert_eq!(recovered_secret, secret);
+    }
+
+    fn fisher_yates_shuffle<T>(slice: &mut [T], rng: &mut impl RandomNumberGenerator) {
+        let mut i = slice.len();
+        while i > 1 {
+            i -= 1;
+            let j = rng.next_in_closed_range(&(0..=i));
+            slice.swap(i, j);
+        }
+    }
+
+    #[test]
+    fn test_shuffle() {
+        let mut rng = bc_crypto::make_fake_random_number_generator();
+        let mut v = (0..100).collect::<Vec<_>>();
+        fisher_yates_shuffle(&mut v, &mut rng);
+        assert_eq!(v.len(), 100);
+        assert_eq!(v, [79, 70, 40, 53, 25, 30, 31, 88, 10, 1,
+            45, 54, 81, 58, 55, 59, 69, 78, 65, 47,
+            75, 61, 0, 72, 20, 9, 80, 13, 73, 11,
+            60, 56, 19, 42, 33, 12, 36, 38, 6, 35,
+            68, 77, 50, 18, 97, 49, 98, 85, 89, 91,
+            15, 71, 99, 67, 84, 23, 64, 14, 57, 48,
+            62, 29, 28, 94, 44, 8, 66, 34, 43, 21,
+            63, 16, 92, 95, 27, 51, 26, 86, 22, 41,
+            93, 82, 7, 87, 74, 37, 46, 3, 96, 24,
+            90, 39, 32, 17, 76, 4, 83, 2, 52, 5]);
+    }
+
+    struct RecoverSpec {
+        secret: Secret,
+        spec: Spec,
+        shares: Vec<Vec<Vec<u8>>>,
+        recovered_group_indexes: Vec<usize>,
+        recovered_member_indexes: Vec<Vec<usize>>,
+        recovered_shares: Vec<Vec<u8>>,
+    }
+
+    impl RecoverSpec {
+        fn new(secret: Secret, spec: Spec, shares: Vec<Vec<Vec<u8>>>, rng: &mut impl RandomNumberGenerator) -> Self {
+            let mut group_indexes = (0..spec.group_count()).collect::<Vec<_>>();
+            fisher_yates_shuffle(&mut group_indexes, rng);
+            let recovered_group_indexes = group_indexes[..spec.group_threshold()].to_vec();
+            let mut recovered_member_indexes = Vec::new();
+            for group_index in &recovered_group_indexes {
+                let group = &spec.groups()[*group_index];
+                let mut member_indexes = (0..group.member_count()).collect::<Vec<_>>();
+                fisher_yates_shuffle(&mut member_indexes, rng);
+                let recovered_member_indexes_for_group = member_indexes[..group.member_threshold()].to_vec();
+                recovered_member_indexes.push(recovered_member_indexes_for_group);
+            }
+
+            let mut recovered_shares = Vec::new();
+            for (i, recovered_group_index) in recovered_group_indexes.iter().enumerate() {
+                let group_shares = &shares[*recovered_group_index];
+                for recovered_member_index in &recovered_member_indexes[i] {
+                    let member_share = &group_shares[*recovered_member_index];
+                    recovered_shares.push(member_share.clone());
+                }
+            }
+            fisher_yates_shuffle(&mut recovered_shares, rng);
+
+            Self {
+                secret,
+                spec,
+                shares,
+                recovered_group_indexes,
+                recovered_member_indexes,
+                recovered_shares,
+            }
+        }
+
+        fn recover(&self) {
+            let success = match sskr_combine(&self.recovered_shares) {
+                Ok(recovered_secret) => recovered_secret == self.secret,
+                Err(e) => {
+                    println!("error: {:?}", e);
+                    false
+                },
+            };
+
+            if !success {
+                println!("secret: {}", hex::encode(self.secret.data()));
+                println!("spec: {:?}", self.spec);
+                println!("shares: {:?}", self.shares);
+                println!("recovered_group_indexes: {:?}", self.recovered_group_indexes);
+                println!("recovered_member_indexes: {:?}", self.recovered_member_indexes);
+                println!("recovered_shares: {:?}", &self.recovered_shares);
+                panic!();
+            }
+        }
+    }
+
+    fn one_fuzz_test(rng: &mut impl RandomNumberGenerator) {
+        let secret_len = rng.next_in_closed_range(&(MIN_SECRET_LEN..=MAX_SECRET_LEN)) & !1;
+        let secret = Secret::new(rng.random_data(secret_len)).unwrap();
+        let group_count = rng.next_in_closed_range(&(1..=MAX_GROUPS_COUNT));
+        let group_specs = (0..group_count).map(|_| {
+            let member_count = rng.next_in_closed_range(&(1..=MAX_SHARE_COUNT));
+            let member_threshold = rng.next_in_closed_range(&(1..=member_count));
+            GroupSpec::new(member_threshold, member_count).unwrap()
+        }).collect::<Vec<_>>();
+        let group_threshold = rng.next_in_closed_range(&(1..=group_count));
+        let spec = Spec::new(group_threshold, group_specs).unwrap();
+        let shares = sskr_generate_using(&spec, &secret, rng).unwrap();
+
+        let recover_spec = RecoverSpec::new(secret, spec, shares, rng);
+        recover_spec.recover();
+    }
+
+    #[test]
+    fn fuzz_test() {
+        let mut rng = bc_crypto::make_fake_random_number_generator();
+        // let mut rng = bc_crypto::SecureRandomNumberGenerator;
+        for _ in 0..100 {
+            one_fuzz_test(&mut rng);
+        }
     }
 }
