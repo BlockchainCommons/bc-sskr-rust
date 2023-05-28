@@ -1,4 +1,4 @@
-use crate::SSKRSecret;
+use crate::Secret;
 
 #[derive(Debug, Clone)]
 pub struct SSKRShare {
@@ -8,7 +8,7 @@ pub struct SSKRShare {
     group_count: usize,
     member_index: usize,
     member_threshold: usize,
-    value: SSKRSecret,
+    value: Secret,
 }
 
 impl SSKRShare {
@@ -19,7 +19,7 @@ impl SSKRShare {
         group_count: usize,
         member_index: usize,
         member_threshold: usize,
-        value: SSKRSecret,
+        value: Secret,
     ) -> Self {
         Self {
             identifier,
@@ -56,7 +56,7 @@ impl SSKRShare {
         self.member_threshold
     }
 
-    pub fn value(&self) -> &SSKRSecret {
+    pub fn value(&self) -> &Secret {
         &self.value
     }
 }

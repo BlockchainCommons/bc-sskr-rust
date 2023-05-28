@@ -1,9 +1,9 @@
 use crate::{Error, MIN_SECRET_LEN, MAX_SECRET_LEN};
 
 #[derive(Clone, Debug, Eq, PartialEq)]
-pub struct SSKRSecret(Vec<u8>);
+pub struct Secret(Vec<u8>);
 
-impl SSKRSecret {
+impl Secret {
     pub fn new(data: Vec<u8>) -> Result<Self, Error> {
         let len = data.len();
         if len < MIN_SECRET_LEN {
@@ -31,7 +31,7 @@ impl SSKRSecret {
     }
 }
 
-impl AsRef<[u8]> for SSKRSecret {
+impl AsRef<[u8]> for Secret {
     fn as_ref(&self) -> &[u8] {
         &self.0
     }

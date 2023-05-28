@@ -10,11 +10,11 @@ pub use encoding::{sskr_generate, sskr_combine};
 mod share;
 pub use share::SSKRShare;
 
-mod sskr_secret;
-pub use sskr_secret::SSKRSecret;
+mod secret;
+pub use secret::Secret;
 
-mod sskr_spec;
-pub use sskr_spec::{Spec, GroupSpec};
+mod spec;
+pub use spec::{Spec, GroupSpec};
 
 mod error;
 pub use error::Error;

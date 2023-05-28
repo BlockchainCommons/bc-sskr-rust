@@ -1,6 +1,6 @@
 use bc_crypto::RandomNumberGenerator;
 use bc_shamir::{split_secret, recover_secret};
-use crate::{Error, SSKRShare, METADATA_LENGTH_BYTES, SSKRSecret, Spec};
+use crate::{Error, SSKRShare, METADATA_LENGTH_BYTES, Secret, Spec};
 
 fn serialize_share(share: &SSKRShare) -> Vec<u8> {
     // pack the id, group and member data into 5 bytes:
@@ -56,7 +56,7 @@ fn deserialize_share(source: &[u8]) -> Result<SSKRShare, Error> {
         return Err(Error::InvalidReservedBits);
     }
     let member_index = (source[4] & 0xf) as usize;
-    let value = SSKRSecret::new(source[METADATA_LENGTH_BYTES..].to_vec())?;
+    let value = Secret::new(source[METADATA_LENGTH_BYTES..].to_vec())?;
 
     Ok(SSKRShare::new(
         identifier,
@@ -71,7 +71,7 @@ fn deserialize_share(source: &[u8]) -> Result<SSKRShare, Error> {
 
 fn generate_shares(
     spec: &Spec,
-    master_secret: &SSKRSecret,
+    master_secret: &Secret,
     random_generator: &mut impl RandomNumberGenerator
 ) -> Result<Vec<Vec<SSKRShare>>, Error> {
     // assign a random identifier
@@ -87,8 +87,8 @@ fn generate_shares(
         let group_secret = &group_secrets[group_index];
         let member_secrets = split_secret(group.threshold(), group.count(), group_secret, random_generator)
             .map_err(Error::ShamirError)?
-            .into_iter().map(SSKRSecret::new)
-            .collect::<Result<Vec<SSKRSecret>, _>>()?;
+            .into_iter().map(Secret::new)
+            .collect::<Result<Vec<Secret>, _>>()?;
         let member_sskr_shares: Vec<SSKRShare> = member_secrets.into_iter().enumerate().map(|(member_index, member_secret)| {
             SSKRShare::new(
                 identifier,
@@ -108,7 +108,7 @@ fn generate_shares(
 
 pub fn sskr_generate(
     spec: &Spec,
-    master_secret: &SSKRSecret,
+    master_secret: &Secret,
     random_generator: &mut impl RandomNumberGenerator
 ) -> Result<Vec<Vec<Vec<u8>>>, Error> {
     let groups_shares = generate_shares(spec, master_secret, random_generator)?;
@@ -130,7 +130,7 @@ struct Group {
     member_threshold: usize,
     count: usize,
     member_index: Vec<usize>,
-    value: Vec<SSKRSecret>,
+    value: Vec<Secret>,
 }
 
 impl Group {
