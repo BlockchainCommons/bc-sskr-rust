@@ -4,7 +4,11 @@ use crate::{Error, MIN_SECRET_LEN, MAX_SECRET_LEN};
 pub struct Secret(Vec<u8>);
 
 impl Secret {
-    pub fn new(data: Vec<u8>) -> Result<Self, Error> {
+    pub fn new<T>(data: T) -> Result<Self, Error>
+    where
+        T: Into<Vec<u8>>,
+    {
+        let data = data.into();
         let len = data.len();
         if len < MIN_SECRET_LEN {
             return Err(Error::SecretTooShort);
