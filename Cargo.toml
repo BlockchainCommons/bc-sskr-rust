@@ -1,0 +1,18 @@
+[package]
+name = "bc-sskr"
+version = "0.1.0"
+edition = "2021"
+description = "Sharded Secret Key Reconstruction (SSKR) for Rust."
+authors = ["Blockchain Commons"]
+keywords = ["cryptography"]
+repository = "https://github.com/BlockchainCommons/bc-sskr-rust"
+readme = "README.md"
+categories = ["cryptography"]
+
+[dependencies]
+bc-crypto = { path = "../bc-crypto-rust" }
+bc-shamir = { path = "../bc-shamir-rust" }
+
+[dev-dependencies]
+hex-literal = "0.4.1"
+hex = "0.4.3"
