@@ -190,6 +190,16 @@ mod tests {
             }
         }
 
+        fn print(&self) {
+            println!("---");
+            println!("secret: {}", hex::encode(self.secret.data()));
+            println!("spec: {:?}", self.spec);
+            println!("shares: {:?}", self.shares);
+            println!("recovered_group_indexes: {:?}", self.recovered_group_indexes);
+            println!("recovered_member_indexes: {:?}", self.recovered_member_indexes);
+            println!("recovered_shares: {:?}", &self.recovered_shares);
+        }
+
         fn recover(&self) {
             let success = match sskr_combine(&self.recovered_shares) {
                 Ok(recovered_secret) => recovered_secret == self.secret,
@@ -200,12 +210,7 @@ mod tests {
             };
 
             if !success {
-                println!("secret: {}", hex::encode(self.secret.data()));
-                println!("spec: {:?}", self.spec);
-                println!("shares: {:?}", self.shares);
-                println!("recovered_group_indexes: {:?}", self.recovered_group_indexes);
-                println!("recovered_member_indexes: {:?}", self.recovered_member_indexes);
-                println!("recovered_shares: {:?}", &self.recovered_shares);
+                self.print();
                 panic!();
             }
         }
