@@ -112,14 +112,10 @@ pub fn sskr_generate_using(
     random_generator: &mut impl RandomNumberGenerator
 ) -> Result<Vec<Vec<Vec<u8>>>, Error> {
     let groups_shares = generate_shares(spec, master_secret, random_generator)?;
-    let mut result = vec![vec![vec![0u8; 0]; spec.share_count()]; spec.group_count()];
 
-    for (group_index, group) in groups_shares.iter().enumerate() {
-        for share in group {
-            let share_bytes = serialize_share(share);
-            result[group_index][share.member_index()].extend_from_slice(&share_bytes);
-        }
-    }
+    let result: Vec<Vec<Vec<u8>>> = groups_shares.iter().map (|group| {
+        group.iter().map(serialize_share).collect()
+    }).collect();
 
     Ok(result)
 }

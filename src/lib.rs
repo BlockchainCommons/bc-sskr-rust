@@ -70,4 +70,52 @@ mod tests {
         let recovered_secret = sskr_combine(&recovered_shares).unwrap();
         assert_eq!(recovered_secret, secret);
     }
+
+    #[test]
+    fn test_split_2_7() {
+        let mut rng = FakeRandomNumberGenerator;
+        let secret = Secret::new(hex!("204188bfa6b440a1bdfd6753ff55a8241e07af5c5be943db917e3efabc184b1a")).unwrap();
+        let group = GroupSpec::new(2, 7).unwrap();
+        let spec = Spec::new(1, vec![group]).unwrap();
+        let shares = sskr_generate_using(&spec, &secret, &mut rng).unwrap();
+        // println!("shares: {:?}", shares);
+        assert_eq!(shares.len(), 1);
+        assert_eq!(shares[0].len(), 7);
+        let flattened_shares = shares.into_iter().flatten().collect::<Vec<_>>();
+        assert_eq!(flattened_shares.len(), 7);
+        for share in &flattened_shares {
+            assert_eq!(share.len(), METADATA_LENGTH_BYTES + secret.len());
+            // println!("share: {}", hex::encode(share));
+        }
+
+        let recovered_share_indexes = vec![3, 4];
+        let recovered_shares = recovered_share_indexes.iter().map(|index| flattened_shares[*index].clone()).collect::<Vec<_>>();
+        let recovered_secret = sskr_combine(&recovered_shares).unwrap();
+        assert_eq!(recovered_secret, secret);
+    }
+
+    #[test]
+    fn test_split_2_3_2_3() {
+        let mut rng = FakeRandomNumberGenerator;
+        let secret = Secret::new(hex!("204188bfa6b440a1bdfd6753ff55a8241e07af5c5be943db917e3efabc184b1a")).unwrap();
+        let group1 = GroupSpec::new(2, 3).unwrap();
+        let group2 = GroupSpec::new(2, 3).unwrap();
+        let spec = Spec::new(2, vec![group1, group2]).unwrap();
+        let shares = sskr_generate_using(&spec, &secret, &mut rng).unwrap();
+        println!("shares: {:?}", shares);
+        assert_eq!(shares.len(), 2);
+        assert_eq!(shares[0].len(), 3);
+        assert_eq!(shares[1].len(), 3);
+        let flattened_shares = shares.into_iter().flatten().collect::<Vec<_>>();
+        assert_eq!(flattened_shares.len(), 6);
+        for share in &flattened_shares {
+            assert_eq!(share.len(), METADATA_LENGTH_BYTES + secret.len());
+            println!("share: {}", hex::encode(share));
+        }
+
+        let recovered_share_indexes = vec![0, 1, 3, 5];
+        let recovered_shares = recovered_share_indexes.iter().map(|index| flattened_shares[*index].clone()).collect::<Vec<_>>();
+        let recovered_secret = sskr_combine(&recovered_shares).unwrap();
+        assert_eq!(recovered_secret, secret);
+    }
 }
