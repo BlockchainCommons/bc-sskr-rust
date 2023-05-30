@@ -2,8 +2,8 @@ pub const MIN_SECRET_LEN: usize = bc_shamir::MIN_SECRET_LEN;
 pub const MAX_SECRET_LEN: usize = bc_shamir::MAX_SECRET_LEN;
 pub const MAX_SHARE_COUNT: usize = bc_shamir::MAX_SHARE_COUNT;
 pub const MAX_GROUPS_COUNT: usize = MAX_SHARE_COUNT;
-pub const METADATA_LENGTH_BYTES: usize = 5;
-pub const MIN_SERIALIZE_LENGTH_BYTES: usize = METADATA_LENGTH_BYTES + MIN_SECRET_LEN;
+pub const METADATA_SIZE_BYTES: usize = 5;
+pub const MIN_SERIALIZE_SIZE_BYTES: usize = METADATA_SIZE_BYTES + MIN_SECRET_LEN;
 
 mod encoding;
 pub use encoding::{sskr_generate, sskr_generate_using, sskr_combine};
@@ -62,7 +62,7 @@ mod tests {
         let flattened_shares = shares.into_iter().flatten().collect::<Vec<_>>();
         assert_eq!(flattened_shares.len(), 5);
         for share in &flattened_shares {
-            assert_eq!(share.len(), METADATA_LENGTH_BYTES + secret.len());
+            assert_eq!(share.len(), METADATA_SIZE_BYTES + secret.len());
             println!("share: {}", hex::encode(share));
         }
 
@@ -85,7 +85,7 @@ mod tests {
         let flattened_shares = shares.into_iter().flatten().collect::<Vec<_>>();
         assert_eq!(flattened_shares.len(), 7);
         for share in &flattened_shares {
-            assert_eq!(share.len(), METADATA_LENGTH_BYTES + secret.len());
+            assert_eq!(share.len(), METADATA_SIZE_BYTES + secret.len());
             // println!("share: {}", hex::encode(share));
         }
 
@@ -110,7 +110,7 @@ mod tests {
         let flattened_shares = shares.into_iter().flatten().collect::<Vec<_>>();
         assert_eq!(flattened_shares.len(), 6);
         for share in &flattened_shares {
-            assert_eq!(share.len(), METADATA_LENGTH_BYTES + secret.len());
+            assert_eq!(share.len(), METADATA_SIZE_BYTES + secret.len());
             // println!("share: {}", hex::encode(share));
         }
 

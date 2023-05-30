@@ -1,6 +1,6 @@
 use bc_crypto::RandomNumberGenerator;
 use bc_shamir::{split_secret, recover_secret};
-use crate::{Error, SSKRShare, METADATA_LENGTH_BYTES, Secret, Spec};
+use crate::{Error, SSKRShare, METADATA_SIZE_BYTES, Secret, Spec};
 
 fn serialize_share(share: &SSKRShare) -> Vec<u8> {
     // pack the id, group and member data into 5 bytes:
@@ -15,7 +15,7 @@ fn serialize_share(share: &SSKRShare) -> Vec<u8> {
     //                                 reserved (MUST be zero): 4
     //                                     member-index: 4
 
-    let mut result = Vec::with_capacity(share.value().len() + METADATA_LENGTH_BYTES);
+    let mut result = Vec::with_capacity(share.value().len() + METADATA_SIZE_BYTES);
     let id = share.identifier();
     let gt = (share.group_threshold() - 1) & 0xf;
     let gc = (share.group_count() - 1) & 0xf;
@@ -37,7 +37,7 @@ fn serialize_share(share: &SSKRShare) -> Vec<u8> {
 }
 
 fn deserialize_share(source: &[u8]) -> Result<SSKRShare, Error> {
-    if source.len() < METADATA_LENGTH_BYTES {
+    if source.len() < METADATA_SIZE_BYTES {
         return Err(Error::NotEnoughSerializedBytes);
     }
 
@@ -56,7 +56,7 @@ fn deserialize_share(source: &[u8]) -> Result<SSKRShare, Error> {
         return Err(Error::InvalidReservedBits);
     }
     let member_index = (source[4] & 0xf) as usize;
-    let value = Secret::new(source[METADATA_LENGTH_BYTES..].to_vec())?;
+    let value = Secret::new(source[METADATA_SIZE_BYTES..].to_vec())?;
 
     Ok(SSKRShare::new(
         identifier,
