@@ -1,5 +1,5 @@
 [package]
-name = "bc-sskr"
+name = "sskr"
 version = "0.1.0"
 edition = "2021"
 description = "Sharded Secret Key Reconstruction (SSKR) for Rust."
