@@ -16,3 +16,4 @@ bc-shamir = { path = "../bc-shamir-rust" }
 [dev-dependencies]
 hex-literal = "0.4.1"
 hex = "0.4.3"
+version-sync = "0.9"
