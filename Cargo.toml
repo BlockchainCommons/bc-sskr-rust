@@ -8,6 +8,7 @@ keywords = ["cryptography"]
 repository = "https://github.com/BlockchainCommons/bc-sskr-rust"
 readme = "README.md"
 categories = ["cryptography"]
+documentation = "https://docs.rs/sskr"
 
 [dependencies]
 bc-crypto = { path = "../bc-crypto-rust" }
