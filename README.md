@@ -8,6 +8,8 @@
 
 ## Introduction
 
+Sharded Secret Key Reconstruction (SSKR) is a protocol for splitting a *secret* into a set of *shares* across one or more *groups*, such that the secret can be reconstructed from any combination of shares totaling or exceeding a *threshold* number of shares within each group and across all groups. SSKR is a generalization of Shamir's Secret Sharing (SSS) that allows for multiple groups and multiple thresholds.
+
 ## Getting Started
 
 ```toml
@@ -17,9 +19,11 @@ sskr = "0.1.0"
 
 ## Specification
 
+SSKR is described in [BCR-2020-011](https://github.com/BlockchainCommons/Research/blob/master/papers/bcr-2020-011-sskr.md).
 
 ## Related Projects
 
+- [bc-shamir](https://crates.io/crates/bc-shamir) - Shamir's Secret Sharing for Rust
 
 ## Status - Alpha
 

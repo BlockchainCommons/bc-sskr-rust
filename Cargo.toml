@@ -7,12 +7,13 @@ authors = ["Blockchain Commons"]
 keywords = ["cryptography"]
 repository = "https://github.com/BlockchainCommons/bc-sskr-rust"
 readme = "README.md"
+license = "BSD-2-Clause-Patent"
 categories = ["cryptography"]
 documentation = "https://docs.rs/sskr"
 
 [dependencies]
-bc-crypto = { path = "../bc-crypto-rust" }
-bc-shamir = { path = "../bc-shamir-rust" }
+bc-crypto = "0.1.0"
+bc-shamir = "0.1.0"
 
 [dev-dependencies]
 hex-literal = "0.4.1"
