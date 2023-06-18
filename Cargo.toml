@@ -1,6 +1,6 @@
 [package]
 name = "sskr"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2021"
 description = "Sharded Secret Key Reconstruction (SSKR) for Rust."
 authors = ["Blockchain Commons"]
@@ -12,8 +12,8 @@ categories = ["cryptography"]
 documentation = "https://docs.rs/sskr"
 
 [dependencies]
-bc-crypto = "0.1.0"
-bc-shamir = "0.1.0"
+bc-crypto = "0.1.1"
+bc-shamir = "0.1.1"
 
 [dev-dependencies]
 hex-literal = "0.4.1"

@@ -1,5 +1,5 @@
 /// Errors that can occur when using the SSKR library.
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Eq, Clone)]
 pub enum Error {
     /// When combining shares, the provided shares contained a duplicate member index.
     DuplicateMemberIndex,

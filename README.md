@@ -14,7 +14,7 @@ Sharded Secret Key Reconstruction (SSKR) is a protocol for splitting a *secret* 
 
 ```toml
 [dependencies]
-sskr = "0.1.0"
+sskr = "0.1.1"
 ```
 
 ## Specification
