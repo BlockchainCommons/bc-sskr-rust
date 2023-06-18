@@ -1,5 +1,5 @@
 /// Errors that can occur when using the SSKR library.
-#[derive(Debug, PartialEq, Eq, Clone)]
+#[derive(Debug)]
 pub enum Error {
     /// When combining shares, the provided shares contained a duplicate member index.
     DuplicateMemberIndex,
@@ -46,22 +46,23 @@ pub enum Error {
 
 impl std::fmt::Display for Error {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        match *self {
-            Error::DuplicateMemberIndex => write!(f, "Duplicate member index"),
-            Error::GroupCountInvalid => write!(f, "Invalid group count"),
-            Error::GroupThresholdInvalid => write!(f, "Invalid group threshold"),
-            Error::MemberCountInvalid => write!(f, "Not enough shares"),
-            Error::MemberThresholdInvalid => write!(f, "Invalid member threshold"),
-            Error::NotEnoughGroups => write!(f, "Not enough groups"),
-            Error::SecretLengthNotEven => write!(f, "Secret is not of even length"),
-            Error::SecretTooLong => write!(f, "Secret is too long"),
-            Error::SecretTooShort => write!(f, "Secret is too short"),
-            Error::ShareLengthInvalid => write!(f, "Not enough serialized bytes"),
-            Error::ShareReservedBitsInvalid => write!(f, "Invalid reserved bits"),
-            Error::SharesEmpty => write!(f, "Empty share set"),
-            Error::ShareSetInvalid => write!(f, "Invalid share set"),
-            Error::ShamirError(ref e) => write!(f, "{}", e),
-        }
+        let s = match *self {
+            Error::DuplicateMemberIndex => "Duplicate member index".to_string(),
+            Error::GroupCountInvalid => "Invalid group count".to_string(),
+            Error::GroupThresholdInvalid => "Invalid group threshold".to_string(),
+            Error::MemberCountInvalid => "Not enough shares".to_string(),
+            Error::MemberThresholdInvalid => "Invalid member threshold".to_string(),
+            Error::NotEnoughGroups => "Not enough groups".to_string(),
+            Error::SecretLengthNotEven => "Secret is not of even length".to_string(),
+            Error::SecretTooLong => "Secret is too long".to_string(),
+            Error::SecretTooShort => "Secret is too short".to_string(),
+            Error::ShareLengthInvalid => "Not enough serialized bytes".to_string(),
+            Error::ShareReservedBitsInvalid => "Invalid reserved bits".to_string(),
+            Error::SharesEmpty => "Empty share set".to_string(),
+            Error::ShareSetInvalid => "Invalid share set".to_string(),
+            Error::ShamirError(ref e) => format!("{}", e),
+        };
+        f.write_str(&s)
     }
 }
 
