@@ -25,9 +25,13 @@ SSKR is described in [BCR-2020-011](https://github.com/BlockchainCommons/Researc
 
 - [bc-shamir](https://crates.io/crates/bc-shamir) - Shamir's Secret Sharing for Rust
 
-## Status - Alpha
+## Status - Community Review
 
-`sskr` is currently under active development and in the alpha testing phase. It should not be used for production tasks until it has had further testing and auditing. See [Blockchain Commons' Development Phases](https://github.com/BlockchainCommons/Community/blob/master/release-path.md).
+`sskr` is currently in a community review stage. We would appreciate your consideration and/or testing of the libraries. Obviously, let us know if you find any mistakes or problems. But also let us know if the API meets your needs, if the functionality is easy to use, if the usage of Rust feels properly standardized, and if the library solves any problems you are encountering when doing this kind of coding. Also let us know how it could be improved and what else you'd need for this to be just right for your usage. Comments can be posted [to the Gordian Developer Community](https://github.com/BlockchainCommons/Gordian-Developer-Community/discussions/116).
+
+Because this library is still in a community review stage, it should not be used for production tasks until it has had further testing and auditing. 
+
+See [Blockchain Commons' Development Phases](https://github.com/BlockchainCommons/Community/blob/master/release-path.md).
 
 ## Financial Support
 
