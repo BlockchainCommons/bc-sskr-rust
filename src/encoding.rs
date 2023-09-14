@@ -1,4 +1,4 @@
-use bc_crypto::RandomNumberGenerator;
+use bc_rand::RandomNumberGenerator;
 use bc_shamir::{split_secret, recover_secret};
 use crate::{Error, METADATA_SIZE_BYTES, Secret, Spec, share::SSKRShare};
 
@@ -12,7 +12,7 @@ pub fn sskr_generate(
     spec: &Spec,
     master_secret: &Secret
 ) -> Result<Vec<Vec<Vec<u8>>>, Error> {
-    let mut rng = bc_crypto::SecureRandomNumberGenerator;
+    let mut rng = bc_rand::SecureRandomNumberGenerator;
     sskr_generate_using(spec, master_secret, &mut rng)
 }
 

@@ -1,4 +1,4 @@
-#![doc(html_root_url = "https://docs.rs/sskr/0.1.2")]
+#![doc(html_root_url = "https://docs.rs/sskr/0.2.0")]
 #![warn(rust_2018_idioms)]
 
 //! # Introduction
@@ -9,7 +9,7 @@
 //!
 //! ```toml
 //! [dependencies]
-//! sskr = "0.1.2"
+//! sskr = "0.2.0"
 //! ```
 //!
 //! # Example
@@ -88,7 +88,7 @@ pub use error::Error;
 #[cfg(test)]
 mod tests {
     use super::*;
-    use bc_crypto::RandomNumberGenerator;
+    use bc_rand::RandomNumberGenerator;
     use hex_literal::hex;
 
     struct FakeRandomNumberGenerator;
@@ -127,7 +127,7 @@ mod tests {
             println!("share: {}", hex::encode(share));
         }
 
-        let recovered_share_indexes = vec![1, 2, 4];
+        let recovered_share_indexes = [1, 2, 4];
         let recovered_shares = recovered_share_indexes.iter().map(|index| flattened_shares[*index].clone()).collect::<Vec<_>>();
         let recovered_secret = sskr_combine(&recovered_shares).unwrap();
         assert_eq!(recovered_secret, secret);
@@ -150,7 +150,7 @@ mod tests {
             // println!("share: {}", hex::encode(share));
         }
 
-        let recovered_share_indexes = vec![3, 4];
+        let recovered_share_indexes = [3, 4];
         let recovered_shares = recovered_share_indexes.iter().map(|index| flattened_shares[*index].clone()).collect::<Vec<_>>();
         let recovered_secret = sskr_combine(&recovered_shares).unwrap();
         assert_eq!(recovered_secret, secret);
@@ -175,7 +175,7 @@ mod tests {
             // println!("share: {}", hex::encode(share));
         }
 
-        let recovered_share_indexes = vec![0, 1, 3, 5];
+        let recovered_share_indexes = [0, 1, 3, 5];
         let recovered_shares = recovered_share_indexes.iter().map(|index| flattened_shares[*index].clone()).collect::<Vec<_>>();
         let recovered_secret = sskr_combine(&recovered_shares).unwrap();
         assert_eq!(recovered_secret, secret);
@@ -192,7 +192,7 @@ mod tests {
 
     #[test]
     fn test_shuffle() {
-        let mut rng = bc_crypto::make_fake_random_number_generator();
+        let mut rng = bc_rand::make_fake_random_number_generator();
         let mut v = (0..100).collect::<Vec<_>>();
         fisher_yates_shuffle(&mut v, &mut rng);
         assert_eq!(v.len(), 100);
@@ -296,8 +296,8 @@ mod tests {
 
     #[test]
     fn fuzz_test() {
-        let mut rng = bc_crypto::make_fake_random_number_generator();
-        // let mut rng = bc_crypto::SecureRandomNumberGenerator;
+        let mut rng = bc_rand::make_fake_random_number_generator();
+        // let mut rng = bc_rand::SecureRandomNumberGenerator;
         for _ in 0..100 {
             one_fuzz_test(&mut rng);
         }
