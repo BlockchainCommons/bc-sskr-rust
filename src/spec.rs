@@ -1,6 +1,6 @@
 use bc_shamir::MAX_SHARE_COUNT;
 
-use crate::Error;
+use crate::SSKRError;
 
 /// A specification for an SSKR split.
 #[derive(Debug, PartialEq)]
@@ -24,15 +24,15 @@ impl Spec {
     /// Returns an error if the group threshold is zero, if the group threshold
     /// is greater than the number of groups, or if the number of groups is
     /// greater than the maximum share count.
-    pub fn new(group_threshold: usize, groups: Vec<GroupSpec>) -> Result<Self, Error> {
+    pub fn new(group_threshold: usize, groups: Vec<GroupSpec>) -> Result<Self, SSKRError> {
         if group_threshold == 0 {
-            return Err(Error::GroupThresholdInvalid);
+            return Err(SSKRError::GroupThresholdInvalid);
         }
         if group_threshold > groups.len() {
-            return Err(Error::GroupThresholdInvalid);
+            return Err(SSKRError::GroupThresholdInvalid);
         }
         if groups.len() > MAX_SHARE_COUNT {
-            return Err(Error::GroupCountInvalid);
+            return Err(SSKRError::GroupCountInvalid);
         }
         Ok(Self {
             group_threshold,
@@ -83,15 +83,15 @@ impl GroupSpec {
     /// Returns an error if the member count is zero, if the member count is
     /// greater than the maximum share count, or if the member threshold is
     /// greater than the member count.
-    pub fn new(member_threshold: usize, member_count: usize) -> Result<Self, Error> {
+    pub fn new(member_threshold: usize, member_count: usize) -> Result<Self, SSKRError> {
         if member_count == 0 {
-            return Err(Error::MemberCountInvalid);
+            return Err(SSKRError::MemberCountInvalid);
         }
         if member_count > MAX_SHARE_COUNT {
-            return Err(Error::MemberCountInvalid);
+            return Err(SSKRError::MemberCountInvalid);
         }
         if member_threshold > member_count {
-            return Err(Error::MemberThresholdInvalid);
+            return Err(SSKRError::MemberThresholdInvalid);
         }
         Ok(Self { member_threshold, member_count })
     }

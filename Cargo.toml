@@ -13,7 +13,11 @@ documentation = "https://docs.rs/sskr"
 
 [dependencies]
 bc-rand = "0.1.0"
-bc-shamir = "0.2.0"
+
+bc-shamir = { path = "../bc-shamir-rust" }
+# bc-shamir = "0.2.0"
+
+thiserror = "1.0.48"
 
 [dev-dependencies]
 hex-literal = "0.4.1"

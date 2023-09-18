@@ -1,6 +1,6 @@
 use bc_rand::RandomNumberGenerator;
 use bc_shamir::{split_secret, recover_secret};
-use crate::{Error, METADATA_SIZE_BYTES, Secret, Spec, share::SSKRShare};
+use crate::{SSKRError, METADATA_SIZE_BYTES, Secret, Spec, share::SSKRShare};
 
 /// Generates SSKR shares for the given `Spec` and `Secret`.
 ///
@@ -11,7 +11,7 @@ use crate::{Error, METADATA_SIZE_BYTES, Secret, Spec, share::SSKRShare};
 pub fn sskr_generate(
     spec: &Spec,
     master_secret: &Secret
-) -> Result<Vec<Vec<Vec<u8>>>, Error> {
+) -> Result<Vec<Vec<Vec<u8>>>, SSKRError> {
     let mut rng = bc_rand::SecureRandomNumberGenerator;
     sskr_generate_using(spec, master_secret, &mut rng)
 }
@@ -29,7 +29,7 @@ pub fn sskr_generate_using(
     spec: &Spec,
     master_secret: &Secret,
     random_generator: &mut impl RandomNumberGenerator
-) -> Result<Vec<Vec<Vec<u8>>>, Error> {
+) -> Result<Vec<Vec<Vec<u8>>>, SSKRError> {
     let groups_shares = generate_shares(spec, master_secret, random_generator)?;
 
     let result: Vec<Vec<Vec<u8>>> = groups_shares.iter().map (|group| {
@@ -49,7 +49,7 @@ pub fn sskr_generate_using(
 ///
 /// Returns an error if the shares do not meet the necessary quorum of groups
 /// and member shares within each group.
-pub fn sskr_combine<T>(shares: &[T]) -> Result<Secret, Error>
+pub fn sskr_combine<T>(shares: &[T]) -> Result<Secret, SSKRError>
 where
     T: AsRef<[u8]>
 {
@@ -97,16 +97,16 @@ fn serialize_share(share: &SSKRShare) -> Vec<u8> {
     result
 }
 
-fn deserialize_share(source: &[u8]) -> Result<SSKRShare, Error> {
+fn deserialize_share(source: &[u8]) -> Result<SSKRShare, SSKRError> {
     if source.len() < METADATA_SIZE_BYTES {
-        return Err(Error::ShareLengthInvalid);
+        return Err(SSKRError::ShareLengthInvalid);
     }
 
     let group_threshold = ((source[2] >> 4) + 1) as usize;
     let group_count = ((source[2] & 0xf) + 1) as usize;
 
     if group_threshold > group_count {
-        return Err(Error::GroupThresholdInvalid);
+        return Err(SSKRError::GroupThresholdInvalid);
     }
 
     let identifier = ((source[0] as u16) << 8) | source[1] as u16;
@@ -114,7 +114,7 @@ fn deserialize_share(source: &[u8]) -> Result<SSKRShare, Error> {
     let member_threshold = ((source[3] & 0xf) + 1) as usize;
     let reserved = source[4] >> 4;
     if reserved != 0 {
-        return Err(Error::ShareReservedBitsInvalid);
+        return Err(SSKRError::ShareReservedBitsInvalid);
     }
     let member_index = (source[4] & 0xf) as usize;
     let value = Secret::new(&source[METADATA_SIZE_BYTES..])?;
@@ -134,7 +134,7 @@ fn generate_shares(
     spec: &Spec,
     master_secret: &Secret,
     random_generator: &mut impl RandomNumberGenerator
-) -> Result<Vec<Vec<SSKRShare>>, Error> {
+) -> Result<Vec<Vec<SSKRShare>>, SSKRError> {
     // assign a random identifier
     let mut identifier = [0u8; 2];
     random_generator.fill_random_data(&mut identifier);
@@ -142,12 +142,12 @@ fn generate_shares(
 
     let mut groups_shares: Vec<Vec<SSKRShare>> = Vec::with_capacity(spec.group_count());
 
-    let group_secrets = split_secret(spec.group_threshold(), spec.group_count(), master_secret.data(), random_generator).map_err(Error::ShamirError)?;
+    let group_secrets = split_secret(spec.group_threshold(), spec.group_count(), master_secret.data(), random_generator).map_err(SSKRError::ShamirError)?;
 
     for (group_index, group) in spec.groups().iter().enumerate() {
         let group_secret = &group_secrets[group_index];
         let member_secrets = split_secret(group.member_threshold(), group.member_count(), group_secret, random_generator)
-            .map_err(Error::ShamirError)?
+            .map_err(SSKRError::ShamirError)?
             .into_iter().map(Secret::new)
             .collect::<Result<Vec<Secret>, _>>()?;
         let member_sskr_shares: Vec<SSKRShare> = member_secrets.into_iter().enumerate().map(|(member_index, member_secret)| {
@@ -188,13 +188,13 @@ impl Group {
     }
 }
 
-fn combine_shares(shares: &[SSKRShare]) -> Result<Secret, Error> {
+fn combine_shares(shares: &[SSKRShare]) -> Result<Secret, SSKRError> {
     let mut identifier = 0;
     let mut group_threshold = 0;
     let mut group_count = 0;
 
     if shares.is_empty() {
-        return Err(Error::SharesEmpty);
+        return Err(SSKRError::SharesEmpty);
     }
 
     let mut next_group = 0;
@@ -215,7 +215,7 @@ fn combine_shares(shares: &[SSKRShare]) -> Result<Secret, Error> {
                 share.group_count() != group_count ||
                 share.value().len() != secret_len
             {
-                return Err(Error::ShareSetInvalid);
+                return Err(SSKRError::ShareSetInvalid);
             }
         }
 
@@ -225,11 +225,11 @@ fn combine_shares(shares: &[SSKRShare]) -> Result<Secret, Error> {
             if share.group_index() == group.group_index {
                 group_found = true;
                 if share.member_threshold() != group.member_threshold {
-                    return Err(Error::MemberThresholdInvalid);
+                    return Err(SSKRError::MemberThresholdInvalid);
                 }
                 for k in 0..group.count {
                     if share.member_index() == group.member_indexes[k] {
-                        return Err(Error::DuplicateMemberIndex);
+                        return Err(SSKRError::DuplicateMemberIndex);
                     }
                 }
                 group.member_indexes.push(share.member_index());
@@ -247,7 +247,7 @@ fn combine_shares(shares: &[SSKRShare]) -> Result<Secret, Error> {
     }
 
     if next_group < group_threshold {
-        return Err(Error::NotEnoughGroups);
+        return Err(SSKRError::NotEnoughGroups);
     }
 
     // here, all of the shares are unpacked into member groups. Now we go through each
@@ -257,12 +257,12 @@ fn combine_shares(shares: &[SSKRShare]) -> Result<Secret, Error> {
     let mut master_shares = Vec::with_capacity(16);
 
     for group in groups {
-        let group_secret = recover_secret(&group.member_indexes, &group.member_shares).map_err(Error::ShamirError)?;
+        let group_secret = recover_secret(&group.member_indexes, &group.member_shares)?;
         master_indexes.push(group.group_index);
         master_shares.push(group_secret);
     }
 
-    let master_secret = recover_secret(&master_indexes, &master_shares).map_err(Error::ShamirError)?;
+    let master_secret = recover_secret(&master_indexes, &master_shares)?;
     let master_secret = Secret::new(master_secret)?;
 
     Ok(master_secret)

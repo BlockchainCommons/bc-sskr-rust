@@ -83,7 +83,7 @@ mod spec;
 pub use spec::{Spec, GroupSpec};
 
 mod error;
-pub use error::Error;
+pub use error::SSKRError;
 
 #[cfg(test)]
 mod tests {
