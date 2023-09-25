@@ -1,6 +1,6 @@
 [package]
 name = "sskr"
-version = "0.2.0"
+version = "0.3.0"
 edition = "2021"
 description = "Sharded Secret Key Reconstruction (SSKR) for Rust."
 authors = ["Blockchain Commons"]
@@ -14,8 +14,8 @@ documentation = "https://docs.rs/sskr"
 [dependencies]
 bc-rand = "0.1.0"
 
-bc-shamir = { path = "../bc-shamir-rust" }
-# bc-shamir = "0.2.0"
+# bc-shamir = { path = "../bc-shamir-rust" }
+bc-shamir = "0.3.0"
 
 thiserror = "1.0.48"
 
