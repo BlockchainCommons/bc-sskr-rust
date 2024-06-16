@@ -6,6 +6,9 @@ pub enum SSKRError {
     #[error("When combining shares, the provided shares contained a duplicate member index")]
     DuplicateMemberIndex,
 
+    #[error("Invalid group specification.")]
+    GroupSpecInvalid,
+
     #[error("When creating a split spec, the group count is invalid")]
     GroupCountInvalid,
 

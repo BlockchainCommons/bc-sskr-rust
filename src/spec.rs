@@ -3,7 +3,7 @@ use bc_shamir::MAX_SHARE_COUNT;
 use crate::SSKRError;
 
 /// A specification for an SSKR split.
-#[derive(Debug, PartialEq)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct Spec {
     group_threshold: usize,
     groups: Vec<GroupSpec>,
@@ -62,7 +62,7 @@ impl Spec {
 }
 
 /// A specification for a group of shares within an SSKR split.
-#[derive(Debug, PartialEq)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct GroupSpec {
     member_threshold: usize,
     member_count: usize,
@@ -104,5 +104,31 @@ impl GroupSpec {
     /// Returns the number of member shares in this group.
     pub fn member_count(&self) -> usize {
         self.member_count
+    }
+
+    /// Parses a group specification from a string.
+    pub fn parse(s: &str) -> Result<Self, SSKRError> {
+        let parts: Vec<&str> = s.split('-').collect();
+        if parts.len() != 3 {
+            return Err(SSKRError::GroupSpecInvalid);
+        }
+        let member_threshold = parts[0].parse::<usize>().map_err(|_| SSKRError::GroupSpecInvalid)?;
+        if parts[1] != "of" {
+            return Err(SSKRError::GroupSpecInvalid);
+        }
+        let member_count = parts[2].parse::<usize>().map_err(|_| SSKRError::GroupSpecInvalid)?;
+        Self::new(member_threshold, member_count)
+    }
+}
+
+impl Default for GroupSpec {
+    fn default() -> Self {
+        Self::new(1, 1).unwrap()
+    }
+}
+
+impl std::fmt::Display for GroupSpec {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{}-of-{}", self.member_threshold, self.member_count)
     }
 }
