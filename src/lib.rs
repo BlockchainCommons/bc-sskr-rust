@@ -1,4 +1,4 @@
-#![doc(html_root_url = "https://docs.rs/sskr/0.3.3")]
+#![doc(html_root_url = "https://docs.rs/sskr/0.3.4")]
 #![warn(rust_2018_idioms)]
 
 //! # Introduction
@@ -9,7 +9,7 @@
 //!
 //! ```toml
 //! [dependencies]
-//! sskr = "0.3.3"
+//! sskr = "0.3.4"
 //! ```
 //!
 //! # Example
