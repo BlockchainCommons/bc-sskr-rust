@@ -171,7 +171,6 @@ fn generate_shares(
 struct Group {
     group_index: usize,
     member_threshold: usize,
-    count: usize,
     member_indexes: Vec<usize>,
     member_shares: Vec<Secret>,
 }
@@ -181,7 +180,6 @@ impl Group {
         Self {
             group_index,
             member_threshold,
-            count: 0,
             member_indexes: Vec::with_capacity(16),
             member_shares: Vec::with_capacity(16),
         }
@@ -227,13 +225,15 @@ fn combine_shares(shares: &[SSKRShare]) -> Result<Secret, SSKRError> {
                 if share.member_threshold() != group.member_threshold {
                     return Err(SSKRError::MemberThresholdInvalid);
                 }
-                for k in 0..group.count {
+                for k in 0..group.member_indexes.len() {
                     if share.member_index() == group.member_indexes[k] {
                         return Err(SSKRError::DuplicateMemberIndex);
                     }
                 }
-                group.member_indexes.push(share.member_index());
-                group.member_shares.push(share.value().clone());
+                if group.member_indexes.len() < group.member_threshold {
+                    group.member_indexes.push(share.member_index());
+                    group.member_shares.push(share.value().clone());
+                }
             }
         }
 
