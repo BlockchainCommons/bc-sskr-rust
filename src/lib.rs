@@ -88,17 +88,32 @@ pub use error::SSKRError;
 #[cfg(test)]
 mod tests {
     use super::*;
-    use bc_rand::RandomNumberGenerator;
+    use bc_rand::{rng_next_in_closed_range, RandomNumberGenerator};
     use hex_literal::hex;
+    use rand::RngCore;
 
     #[derive(Debug)]
     struct FakeRandomNumberGenerator;
 
-    impl RandomNumberGenerator for FakeRandomNumberGenerator {
+    impl RngCore for FakeRandomNumberGenerator {
         fn next_u64(&mut self) -> u64 {
             unimplemented!()
         }
 
+        fn next_u32(&mut self) -> u32 {
+            unimplemented!()
+        }
+
+        fn fill_bytes(&mut self, _dest: &mut [u8]) {
+            unimplemented!()
+        }
+
+        fn try_fill_bytes(&mut self, _dest: &mut [u8]) -> Result<(), rand::Error> {
+            unimplemented!()
+        }
+    }
+
+    impl RandomNumberGenerator for FakeRandomNumberGenerator {
         fn random_data(&mut self, size: usize) -> Vec<u8> {
             let mut b = vec![0u8; size];
             self.fill_random_data(&mut b);
@@ -199,7 +214,7 @@ mod tests {
         let mut i = slice.len();
         while i > 1 {
             i -= 1;
-            let j = rng.next_in_closed_range(&(0..=i));
+            let j = rng_next_in_closed_range(rng, &(0..=i));
             slice.swap(i, j);
         }
     }
@@ -298,17 +313,17 @@ mod tests {
     }
 
     fn one_fuzz_test(rng: &mut impl RandomNumberGenerator) {
-        let secret_len = rng.next_in_closed_range(&(MIN_SECRET_LEN..=MAX_SECRET_LEN)) & !1;
+        let secret_len = rng_next_in_closed_range(rng, &(MIN_SECRET_LEN..=MAX_SECRET_LEN)) & !1;
         let secret = Secret::new(rng.random_data(secret_len)).unwrap();
-        let group_count = rng.next_in_closed_range(&(1..=MAX_GROUPS_COUNT));
+        let group_count = rng_next_in_closed_range(rng, &(1..=MAX_GROUPS_COUNT));
         let group_specs = (0..group_count)
             .map(|_| {
-                let member_count = rng.next_in_closed_range(&(1..=MAX_SHARE_COUNT));
-                let member_threshold = rng.next_in_closed_range(&(1..=member_count));
+                let member_count = rng_next_in_closed_range(rng, &(1..=MAX_SHARE_COUNT));
+                let member_threshold = rng_next_in_closed_range(rng, &(1..=member_count));
                 GroupSpec::new(member_threshold, member_count).unwrap()
             })
             .collect::<Vec<_>>();
-        let group_threshold = rng.next_in_closed_range(&(1..=group_count));
+        let group_threshold = rng_next_in_closed_range(rng, &(1..=group_count));
         let spec = Spec::new(group_threshold, group_specs).unwrap();
         let shares = sskr_generate_using(&spec, &secret, rng).unwrap();
 
