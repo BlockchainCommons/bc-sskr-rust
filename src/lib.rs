@@ -424,4 +424,27 @@ mod tests {
             assert_eq!(from_utf8(result.unwrap().data()).unwrap(), TEXT);
         }
     }
+
+    /// Test fix for [seedtool-cli #6](https://github.com/BlockchainCommons/seedtool-cli-rust/issues/6).
+    #[test]
+    fn example_encode_4() {
+        use crate::{ Secret, GroupSpec, Spec, sskr_generate, sskr_combine };
+        use std::str::from_utf8;
+
+        const TEXT: &str = "my secret belongs to me.";
+        let secret = Secret::new(TEXT).unwrap();
+        let spec = Spec::new(1, vec![GroupSpec::new(2, 3).unwrap(), GroupSpec::new(2, 3).unwrap()]).unwrap();
+        let groupd_shares: Vec<Vec<Vec<u8>>> = sskr_generate(&spec, &secret).unwrap();
+        let flattened_shares = groupd_shares.into_iter().flatten().collect::<Vec<Vec<u8>>>();
+        // The group threshold is 1, but we're providing an additional share from the second group.
+        // This was previously causing an error, because the second group could not be decoded.
+        // The correct behavior is to ignore any group's shares that cannot be decoded.
+        let recovered_share_indexes = [0, 1, 3];
+        let recovered_shares = recovered_share_indexes
+            .iter()
+            .map(|index| flattened_shares[*index].clone())
+            .collect::<Vec<Vec<u8>>>();
+        let recovered_secret = sskr_combine(&recovered_shares).unwrap();
+        assert_eq!(from_utf8(recovered_secret.data()).unwrap(), TEXT);
+    }
 }

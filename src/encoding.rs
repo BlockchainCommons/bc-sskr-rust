@@ -246,22 +246,39 @@ fn combine_shares(shares: &[SSKRShare]) -> Result<Secret, SSKRError> {
         }
     }
 
+    // Check that we have enough groups to recover the master secret
     if next_group < group_threshold {
         return Err(SSKRError::NotEnoughGroups);
     }
 
-    // here, all of the shares are unpacked into member groups. Now we go through each
+    // Here, all of the shares are unpacked into member groups. Now we go through each
     // group and recover the group secret, and then use the result to recover the
     // master secret
     let mut master_indexes = Vec::with_capacity(16);
     let mut master_shares = Vec::with_capacity(16);
 
     for group in groups {
-        let group_secret = recover_secret(&group.member_indexes, &group.member_shares)?;
-        master_indexes.push(group.group_index);
-        master_shares.push(group_secret);
+        // Only attempt to recover the group secret if we have enough shares
+        if group.member_indexes.len() < group.member_threshold {
+            continue;
+        }
+        // Recover the group secret
+        if let Ok(group_secret) = recover_secret(&group.member_indexes, &group.member_shares) {
+            master_indexes.push(group.group_index);
+            master_shares.push(group_secret);
+        }
+        // Stop if we have enough groups to recover the master secret
+        if master_indexes.len() == group_threshold {
+            break;
+        }
     }
 
+    // If we don't have enough groups to recover the master secret, return an error
+    if master_indexes.len() < group_threshold {
+        return Err(SSKRError::NotEnoughGroups);
+    }
+
+    // Recover the master secret
     let master_secret = recover_secret(&master_indexes, &master_shares)?;
     let master_secret = Secret::new(master_secret)?;
 
