@@ -1,4 +1,4 @@
-#![doc(html_root_url = "https://docs.rs/sskr/0.4.1")]
+#![doc(html_root_url = "https://docs.rs/sskr/0.4.2")]
 #![warn(rust_2018_idioms)]
 
 //! # Introduction
@@ -9,7 +9,7 @@
 //!
 //! ```toml
 //! [dependencies]
-//! sskr = "0.4.1"
+//! sskr = "0.4.2"
 //! ```
 //!
 //! # Example
@@ -90,7 +90,7 @@ mod tests {
     use super::*;
     use bc_rand::{rng_next_in_closed_range, RandomNumberGenerator};
     use hex_literal::hex;
-    use rand::RngCore;
+    use rand::{CryptoRng, RngCore};
 
     #[derive(Debug)]
     struct FakeRandomNumberGenerator;
@@ -112,6 +112,9 @@ mod tests {
             unimplemented!()
         }
     }
+
+    // Testing purposes only!
+    impl CryptoRng for FakeRandomNumberGenerator {}
 
     impl RandomNumberGenerator for FakeRandomNumberGenerator {
         fn random_data(&mut self, size: usize) -> Vec<u8> {
