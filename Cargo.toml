@@ -1,6 +1,6 @@
 [package]
 name = "sskr"
-version = "0.4.2"
+version = "0.5.0"
 edition = "2021"
 description = "Sharded Secret Key Reconstruction (SSKR) for Rust."
 authors = ["Blockchain Commons"]
