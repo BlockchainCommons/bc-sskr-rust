@@ -8,13 +8,13 @@
 
 ## Introduction
 
-Sharded Secret Key Reconstruction (SSKR) is a protocol for splitting a *secret* into a set of *shares* across one or more *groups*, such that the secret can be reconstructed from any combination of shares totaling or exceeding a *threshold* number of shares within each group and across all groups. SSKR is a generalization of Shamir's Secret Sharing (SSS) that allows for multiple groups and multiple thresholds.
+Sharded Secret Key Reconstruction (SSKR) is a protocol for splitting a _secret_ into a set of _shares_ across one or more _groups_, such that the secret can be reconstructed from any combination of shares totaling or exceeding a _threshold_ number of shares within each group and across all groups. SSKR is a generalization of Shamir's Secret Sharing (SSS) that allows for multiple groups and multiple thresholds.
 
 ## Getting Started
 
 ```toml
 [dependencies]
-sskr = "0.5.0"
+sskr = "0.6.0"
 ```
 
 ## Specification
@@ -64,10 +64,10 @@ If your company requires support to use our projects, please feel free to contac
 
 The following people directly contributed to this repository. You can add your name here by getting involved. The first step is learning how to contribute from our [CONTRIBUTING.md](./CONTRIBUTING.md) documentation.
 
-| Name              | Role                | Github                                            | Email                                 | GPG Fingerprint                                    |
-| ----------------- | ------------------- | ------------------------------------------------- | ------------------------------------- | -------------------------------------------------- |
-| Christopher Allen | Principal Architect | [@ChristopherA](https://github.com/ChristopherA)  | \<ChristopherA@LifeWithAlacrity.com\> | FDFE 14A5 4ECB 30FC 5D22  74EF F8D3 6C91 3574 05ED |
-| Wolf McNally      | Lead Researcher/Engineer         | [@WolfMcNally](https://github.com/wolfmcnally)    | \<Wolf@WolfMcNally.com\>              | 9436 52EE 3844 1760 C3DC  3536 4B6C 2FCF 8947 80AE |
+| Name              | Role                     | Github                                           | Email                                 | GPG Fingerprint                                    |
+| ----------------- | ------------------------ | ------------------------------------------------ | ------------------------------------- | -------------------------------------------------- |
+| Christopher Allen | Principal Architect      | [@ChristopherA](https://github.com/ChristopherA) | \<ChristopherA@LifeWithAlacrity.com\> | FDFE 14A5 4ECB 30FC 5D22 74EF F8D3 6C91 3574 05ED  |
+| Wolf McNally      | Lead Researcher/Engineer | [@WolfMcNally](https://github.com/wolfmcnally)   | \<Wolf@WolfMcNally.com\>              | 9436 52EE 3844 1760 C3DC  3536 4B6C 2FCF 8947 80AE |
 
 ## Responsible Disclosure
 
@@ -81,8 +81,8 @@ Please report suspected security vulnerabilities in private via email to Christo
 
 The following keys may be used to communicate sensitive information to developers:
 
-| Name              | Fingerprint                                        |
-| ----------------- | -------------------------------------------------- |
-| Christopher Allen | FDFE 14A5 4ECB 30FC 5D22  74EF F8D3 6C91 3574 05ED |
+| Name              | Fingerprint                                       |
+| ----------------- | ------------------------------------------------- |
+| Christopher Allen | FDFE 14A5 4ECB 30FC 5D22 74EF F8D3 6C91 3574 05ED |
 
 You can import a key by running the following command with that individual’s fingerprint: `gpg --recv-keys "<fingerprint>"` Ensure that you put quotes around fingerprints that contain spaces.
