@@ -1,4 +1,4 @@
-#![doc(html_root_url = "https://docs.rs/sskr/0.6.0")]
+#![doc(html_root_url = "https://docs.rs/sskr/0.7.0")]
 #![warn(rust_2018_idioms)]
 
 //! # Introduction
@@ -9,7 +9,7 @@
 //!
 //! ```toml
 //! [dependencies]
-//! sskr = "0.6.0"
+//! sskr = "0.7.0"
 //! ```
 //!
 //! # Example
@@ -88,9 +88,9 @@ pub use error::SSKRError;
 #[cfg(test)]
 mod tests {
     use super::*;
-    use bc_rand::{rng_next_in_closed_range, RandomNumberGenerator};
+    use bc_rand::{ rng_next_in_closed_range, RandomNumberGenerator };
     use hex_literal::hex;
-    use rand::{CryptoRng, RngCore};
+    use rand::{ CryptoRng, RngCore };
 
     #[derive(Debug)]
     struct FakeRandomNumberGenerator;
@@ -436,7 +436,10 @@ mod tests {
 
         const TEXT: &str = "my secret belongs to me.";
         let secret = Secret::new(TEXT).unwrap();
-        let spec = Spec::new(1, vec![GroupSpec::new(2, 3).unwrap(), GroupSpec::new(2, 3).unwrap()]).unwrap();
+        let spec = Spec::new(
+            1,
+            vec![GroupSpec::new(2, 3).unwrap(), GroupSpec::new(2, 3).unwrap()]
+        ).unwrap();
         let groupd_shares: Vec<Vec<Vec<u8>>> = sskr_generate(&spec, &secret).unwrap();
         let flattened_shares = groupd_shares.into_iter().flatten().collect::<Vec<Vec<u8>>>();
         // The group threshold is 1, but we're providing an additional share from the second group.

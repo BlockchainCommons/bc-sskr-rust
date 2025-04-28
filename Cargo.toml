@@ -1,7 +1,7 @@
 [package]
 name = "sskr"
-version = "0.6.0"
-edition = "2021"
+version = "0.7.0"
+edition = "2024"
 description = "Sharded Secret Key Reconstruction (SSKR) for Rust."
 authors = ["Blockchain Commons"]
 repository = "https://github.com/BlockchainCommons/bc-sskr-rust"
@@ -12,8 +12,8 @@ keywords = ["cryptography"]                                        # Up to five
 categories = ["cryptography"]                                      # https://crates.io/category_slugs
 
 [dependencies]
-bc-rand = "^0.3.0"
-bc-shamir = "^0.6.0"
+bc-rand = "^0.4.0"
+bc-shamir = "^0.7.0"
 
 thiserror = "^1.0.48"
 
