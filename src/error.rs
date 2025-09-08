@@ -2,7 +2,7 @@ use thiserror::Error;
 
 /// Errors that can occur when using the SSKR library.
 #[derive(Debug, Error)]
-pub enum SSKRError {
+pub enum Error {
     #[error("When combining shares, the provided shares contained a duplicate member index")]
     DuplicateMemberIndex,
 
@@ -46,11 +46,7 @@ pub enum SSKRError {
     ShareSetInvalid,
 
     #[error("SSKR Shamir error: {0}")]
-    ShamirError(bc_shamir::Error),
+    ShamirError(#[from] bc_shamir::Error),
 }
 
-impl From<bc_shamir::Error> for SSKRError {
-    fn from(err: bc_shamir::Error) -> Self {
-        SSKRError::ShamirError(err)
-    }
-}
+pub type Result<T> = std::result::Result<T, Error>;

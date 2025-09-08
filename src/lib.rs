@@ -83,7 +83,7 @@ mod spec;
 pub use spec::{ Spec, GroupSpec };
 
 mod error;
-pub use error::SSKRError;
+pub use error::{ Error, Result };
 
 #[cfg(test)]
 mod tests {
@@ -108,7 +108,7 @@ mod tests {
             unimplemented!()
         }
 
-        fn try_fill_bytes(&mut self, _dest: &mut [u8]) -> Result<(), rand::Error> {
+        fn try_fill_bytes(&mut self, _dest: &mut [u8]) -> std::result::Result<(), rand::Error> {
             unimplemented!()
         }
     }
@@ -397,12 +397,12 @@ mod tests {
     /// Test fix for [#1](https://github.com/BlockchainCommons/bc-sskr-rust/issues/1).
     #[test]
     fn example_encode_3() {
-        use crate::{ SSKRError, Secret, GroupSpec, Spec, sskr_generate, sskr_combine };
+        use crate::{ Secret, GroupSpec, Spec, sskr_generate, sskr_combine };
         use std::str::from_utf8;
 
         const TEXT: &str = "my secret belongs to me.";
 
-        fn roundtrip(m: usize, n: usize) -> Result<Secret, SSKRError> {
+        fn roundtrip(m: usize, n: usize) -> Result<Secret> {
             let secret = Secret::new(TEXT).unwrap();
             let spec = Spec::new(1, vec![GroupSpec::new(m, n).unwrap()]).unwrap();
             let shares: Vec<Vec<Vec<u8>>> = sskr_generate(&spec, &secret).unwrap();

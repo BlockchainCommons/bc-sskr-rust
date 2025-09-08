@@ -1,6 +1,6 @@
 use bc_shamir::MAX_SHARE_COUNT;
 
-use crate::SSKRError;
+use crate::Error;
 
 /// A specification for an SSKR split.
 #[derive(Debug, Clone, PartialEq)]
@@ -24,15 +24,15 @@ impl Spec {
     /// Returns an error if the group threshold is zero, if the group threshold
     /// is greater than the number of groups, or if the number of groups is
     /// greater than the maximum share count.
-    pub fn new(group_threshold: usize, groups: Vec<GroupSpec>) -> Result<Self, SSKRError> {
+    pub fn new(group_threshold: usize, groups: Vec<GroupSpec>) -> Result<Self, Error> {
         if group_threshold == 0 {
-            return Err(SSKRError::GroupThresholdInvalid);
+            return Err(Error::GroupThresholdInvalid);
         }
         if group_threshold > groups.len() {
-            return Err(SSKRError::GroupThresholdInvalid);
+            return Err(Error::GroupThresholdInvalid);
         }
         if groups.len() > MAX_SHARE_COUNT {
-            return Err(SSKRError::GroupCountInvalid);
+            return Err(Error::GroupCountInvalid);
         }
         Ok(Self {
             group_threshold,
@@ -83,15 +83,15 @@ impl GroupSpec {
     /// Returns an error if the member count is zero, if the member count is
     /// greater than the maximum share count, or if the member threshold is
     /// greater than the member count.
-    pub fn new(member_threshold: usize, member_count: usize) -> Result<Self, SSKRError> {
+    pub fn new(member_threshold: usize, member_count: usize) -> Result<Self, Error> {
         if member_count == 0 {
-            return Err(SSKRError::MemberCountInvalid);
+            return Err(Error::MemberCountInvalid);
         }
         if member_count > MAX_SHARE_COUNT {
-            return Err(SSKRError::MemberCountInvalid);
+            return Err(Error::MemberCountInvalid);
         }
         if member_threshold > member_count {
-            return Err(SSKRError::MemberThresholdInvalid);
+            return Err(Error::MemberThresholdInvalid);
         }
         Ok(Self { member_threshold, member_count })
     }
@@ -107,16 +107,16 @@ impl GroupSpec {
     }
 
     /// Parses a group specification from a string.
-    pub fn parse(s: &str) -> Result<Self, SSKRError> {
+    pub fn parse(s: &str) -> Result<Self, Error> {
         let parts: Vec<&str> = s.split('-').collect();
         if parts.len() != 3 {
-            return Err(SSKRError::GroupSpecInvalid);
+            return Err(Error::GroupSpecInvalid);
         }
-        let member_threshold = parts[0].parse::<usize>().map_err(|_| SSKRError::GroupSpecInvalid)?;
+        let member_threshold = parts[0].parse::<usize>().map_err(|_| Error::GroupSpecInvalid)?;
         if parts[1] != "of" {
-            return Err(SSKRError::GroupSpecInvalid);
+            return Err(Error::GroupSpecInvalid);
         }
-        let member_count = parts[2].parse::<usize>().map_err(|_| SSKRError::GroupSpecInvalid)?;
+        let member_count = parts[2].parse::<usize>().map_err(|_| Error::GroupSpecInvalid)?;
         Self::new(member_threshold, member_count)
     }
 }
