@@ -1,4 +1,4 @@
-use crate::{Error, MIN_SECRET_LEN, MAX_SECRET_LEN};
+use crate::{Error, Result, MIN_SECRET_LEN, MAX_SECRET_LEN};
 
 /// A secret to be split into shares.
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -15,7 +15,7 @@ impl Secret {
     ///
     /// Returns an error if the length of the secret is less than `MIN_SECRET_LEN`, greater than `MAX_SECRET_LEN`,
     /// or not even.
-    pub fn new<T>(data: T) -> Result<Self, Error>
+    pub fn new<T>(data: T) -> Result<Self>
     where
         T: AsRef<[u8]>,
     {

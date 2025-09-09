@@ -1,6 +1,6 @@
 use bc_shamir::MAX_SHARE_COUNT;
 
-use crate::Error;
+use crate::{Error, Result};
 
 /// A specification for an SSKR split.
 #[derive(Debug, Clone, PartialEq)]
@@ -24,7 +24,7 @@ impl Spec {
     /// Returns an error if the group threshold is zero, if the group threshold
     /// is greater than the number of groups, or if the number of groups is
     /// greater than the maximum share count.
-    pub fn new(group_threshold: usize, groups: Vec<GroupSpec>) -> Result<Self, Error> {
+    pub fn new(group_threshold: usize, groups: Vec<GroupSpec>) -> Result<Self> {
         if group_threshold == 0 {
             return Err(Error::GroupThresholdInvalid);
         }
@@ -83,7 +83,7 @@ impl GroupSpec {
     /// Returns an error if the member count is zero, if the member count is
     /// greater than the maximum share count, or if the member threshold is
     /// greater than the member count.
-    pub fn new(member_threshold: usize, member_count: usize) -> Result<Self, Error> {
+    pub fn new(member_threshold: usize, member_count: usize) -> Result<Self> {
         if member_count == 0 {
             return Err(Error::MemberCountInvalid);
         }
@@ -107,7 +107,7 @@ impl GroupSpec {
     }
 
     /// Parses a group specification from a string.
-    pub fn parse(s: &str) -> Result<Self, Error> {
+    pub fn parse(s: &str) -> Result<Self> {
         let parts: Vec<&str> = s.split('-').collect();
         if parts.len() != 3 {
             return Err(Error::GroupSpecInvalid);
