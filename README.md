@@ -14,7 +14,7 @@ Sharded Secret Key Reconstruction (SSKR) is a protocol for splitting a _secret_ 
 
 ```toml
 [dependencies]
-sskr = "0.8.0"
+sskr = "0.9.0"
 ```
 
 ## Specification
@@ -38,6 +38,14 @@ See [Blockchain Commons' Development Phases](https://github.com/BlockchainCommon
 `sskr` is a project of [Blockchain Commons](https://www.blockchaincommons.com/). We are proudly a "not-for-profit" social benefit corporation committed to open source & open development. Our work is funded entirely by donations and collaborative partnerships with people like you. Every contribution will be spent on building open tools, technologies, and techniques that sustain and advance blockchain and internet security infrastructure and promote an open web.
 
 To financially support further development of `sskr` and other projects, please consider becoming a Patron of Blockchain Commons through ongoing monthly patronage as a [GitHub Sponsor](https://github.com/sponsors/BlockchainCommons). You can also support Blockchain Commons with bitcoins at our [BTCPay Server](https://btcpay.blockchaincommons.com/).
+
+## Version History
+
+### 0.9.0 - September 16, 2025
+
+- Migrate to thiserror v2
+- Improve error handling
+- Align to dependencies
 
 ## Contributing
 
