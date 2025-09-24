@@ -3,7 +3,9 @@ use thiserror::Error;
 /// Errors that can occur when using the SSKR library.
 #[derive(Debug, Error)]
 pub enum Error {
-    #[error("When combining shares, the provided shares contained a duplicate member index")]
+    #[error(
+        "When combining shares, the provided shares contained a duplicate member index"
+    )]
     DuplicateMemberIndex,
 
     #[error("Invalid group specification.")]

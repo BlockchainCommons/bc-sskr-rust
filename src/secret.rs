@@ -1,4 +1,4 @@
-use crate::{Error, Result, MIN_SECRET_LEN, MAX_SECRET_LEN};
+use crate::{Error, MAX_SECRET_LEN, MIN_SECRET_LEN, Result};
 
 /// A secret to be split into shares.
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -13,8 +13,8 @@ impl Secret {
     ///
     /// # Errors
     ///
-    /// Returns an error if the length of the secret is less than `MIN_SECRET_LEN`, greater than `MAX_SECRET_LEN`,
-    /// or not even.
+    /// Returns an error if the length of the secret is less than
+    /// `MIN_SECRET_LEN`, greater than `MAX_SECRET_LEN`, or not even.
     pub fn new<T>(data: T) -> Result<Self>
     where
         T: AsRef<[u8]>,
@@ -34,24 +34,16 @@ impl Secret {
     }
 
     /// Returns the length of the secret.
-    pub fn len(&self) -> usize {
-        self.0.len()
-    }
+    pub fn len(&self) -> usize { self.0.len() }
 
     /// Returns `true` if the secret is empty.
-    pub fn is_empty(&self) -> bool {
-        self.len() == 0
-    }
+    pub fn is_empty(&self) -> bool { self.len() == 0 }
 
     /// Returns a reference to the secret data.
-    pub fn data(&self) -> &[u8] {
-        &self.0
-    }
+    pub fn data(&self) -> &[u8] { &self.0 }
 }
 
 impl AsRef<[u8]> for Secret {
     /// Returns a reference to the secret data.
-    fn as_ref(&self) -> &[u8] {
-        &self.0
-    }
+    fn as_ref(&self) -> &[u8] { &self.0 }
 }

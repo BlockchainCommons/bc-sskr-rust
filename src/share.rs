@@ -32,31 +32,17 @@ impl SSKRShare {
         }
     }
 
-    pub fn identifier(&self) -> u16 {
-        self.identifier
-    }
+    pub fn identifier(&self) -> u16 { self.identifier }
 
-    pub fn group_index(&self) -> usize {
-        self.group_index
-    }
+    pub fn group_index(&self) -> usize { self.group_index }
 
-    pub fn group_threshold(&self) -> usize {
-        self.group_threshold
-    }
+    pub fn group_threshold(&self) -> usize { self.group_threshold }
 
-    pub fn group_count(&self) -> usize {
-        self.group_count
-    }
+    pub fn group_count(&self) -> usize { self.group_count }
 
-    pub fn member_index(&self) -> usize {
-        self.member_index
-    }
+    pub fn member_index(&self) -> usize { self.member_index }
 
-    pub fn member_threshold(&self) -> usize {
-        self.member_threshold
-    }
+    pub fn member_threshold(&self) -> usize { self.member_threshold }
 
-    pub fn value(&self) -> &Secret {
-        &self.value
-    }
+    pub fn value(&self) -> &Secret { &self.value }
 }

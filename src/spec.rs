@@ -34,26 +34,17 @@ impl Spec {
         if groups.len() > MAX_SHARE_COUNT {
             return Err(Error::GroupCountInvalid);
         }
-        Ok(Self {
-            group_threshold,
-            groups,
-        })
+        Ok(Self { group_threshold, groups })
     }
 
     /// Returns the group threshold.
-    pub fn group_threshold(&self) -> usize {
-        self.group_threshold
-    }
+    pub fn group_threshold(&self) -> usize { self.group_threshold }
 
     /// Returns a slice of the group specifications.
-    pub fn groups(&self) -> &[GroupSpec] {
-        &self.groups
-    }
+    pub fn groups(&self) -> &[GroupSpec] { &self.groups }
 
     /// Returns the number of groups.
-    pub fn group_count(&self) -> usize {
-        self.groups.len()
-    }
+    pub fn group_count(&self) -> usize { self.groups.len() }
 
     /// Returns the total number of shares across all groups.
     pub fn share_count(&self) -> usize {
@@ -97,14 +88,10 @@ impl GroupSpec {
     }
 
     /// Returns the member share threshold for this group.
-    pub fn member_threshold(&self) -> usize {
-        self.member_threshold
-    }
+    pub fn member_threshold(&self) -> usize { self.member_threshold }
 
     /// Returns the number of member shares in this group.
-    pub fn member_count(&self) -> usize {
-        self.member_count
-    }
+    pub fn member_count(&self) -> usize { self.member_count }
 
     /// Parses a group specification from a string.
     pub fn parse(s: &str) -> Result<Self> {
@@ -112,19 +99,21 @@ impl GroupSpec {
         if parts.len() != 3 {
             return Err(Error::GroupSpecInvalid);
         }
-        let member_threshold = parts[0].parse::<usize>().map_err(|_| Error::GroupSpecInvalid)?;
+        let member_threshold = parts[0]
+            .parse::<usize>()
+            .map_err(|_| Error::GroupSpecInvalid)?;
         if parts[1] != "of" {
             return Err(Error::GroupSpecInvalid);
         }
-        let member_count = parts[2].parse::<usize>().map_err(|_| Error::GroupSpecInvalid)?;
+        let member_count = parts[2]
+            .parse::<usize>()
+            .map_err(|_| Error::GroupSpecInvalid)?;
         Self::new(member_threshold, member_count)
     }
 }
 
 impl Default for GroupSpec {
-    fn default() -> Self {
-        Self::new(1, 1).unwrap()
-    }
+    fn default() -> Self { Self::new(1, 1).unwrap() }
 }
 
 impl std::fmt::Display for GroupSpec {

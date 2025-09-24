@@ -3,7 +3,12 @@
 
 //! # Introduction
 //!
-//! Sharded Secret Key Reconstruction (SSKR) is a protocol for splitting a *secret* into a set of *shares* across one or more *groups*, such that the secret can be reconstructed from any combination of shares totaling or exceeding a *threshold* number of shares within each group and across all groups. SSKR is a generalization of Shamir's Secret Sharing (SSS) that allows for multiple groups and multiple thresholds.
+//! Sharded Secret Key Reconstruction (SSKR) is a protocol for splitting a
+//! *secret* into a set of *shares* across one or more *groups*, such that the
+//! secret can be reconstructed from any combination of shares totaling or
+//! exceeding a *threshold* number of shares within each group and across all
+//! groups. SSKR is a generalization of Shamir's Secret Sharing (SSS) that
+//! allows for multiple groups and multiple thresholds.
 //!
 //! # Getting Started
 //!
@@ -42,7 +47,6 @@
 //!     // Two shares from the first group.
 //!     shares[0][0].clone(),
 //!     shares[0][2].clone(),
-//!
 //!     // Three shares from the second group.
 //!     shares[1][0].clone(),
 //!     shares[1][1].clone(),
@@ -69,10 +73,11 @@ pub const MAX_GROUPS_COUNT: usize = MAX_SHARE_COUNT;
 pub const METADATA_SIZE_BYTES: usize = 5;
 
 /// The minimum number of bytes required to encode a share.
-pub const MIN_SERIALIZE_SIZE_BYTES: usize = METADATA_SIZE_BYTES + MIN_SECRET_LEN;
+pub const MIN_SERIALIZE_SIZE_BYTES: usize =
+    METADATA_SIZE_BYTES + MIN_SECRET_LEN;
 
 mod encoding;
-pub use encoding::{ sskr_generate, sskr_generate_using, sskr_combine };
+pub use encoding::{sskr_combine, sskr_generate, sskr_generate_using};
 
 mod share;
 
@@ -80,35 +85,33 @@ mod secret;
 pub use secret::Secret;
 
 mod spec;
-pub use spec::{ Spec, GroupSpec };
+pub use spec::{GroupSpec, Spec};
 
 mod error;
-pub use error::{ Error, Result };
+pub use error::{Error, Result};
 
 #[cfg(test)]
 mod tests {
-    use super::*;
-    use bc_rand::{ rng_next_in_closed_range, RandomNumberGenerator };
+    use bc_rand::{RandomNumberGenerator, rng_next_in_closed_range};
     use hex_literal::hex;
-    use rand::{ CryptoRng, RngCore };
+    use rand::{CryptoRng, RngCore};
+
+    use super::*;
 
     #[derive(Debug)]
     struct FakeRandomNumberGenerator;
 
     impl RngCore for FakeRandomNumberGenerator {
-        fn next_u64(&mut self) -> u64 {
-            unimplemented!()
-        }
+        fn next_u64(&mut self) -> u64 { unimplemented!() }
 
-        fn next_u32(&mut self) -> u32 {
-            unimplemented!()
-        }
+        fn next_u32(&mut self) -> u32 { unimplemented!() }
 
-        fn fill_bytes(&mut self, _dest: &mut [u8]) {
-            unimplemented!()
-        }
+        fn fill_bytes(&mut self, _dest: &mut [u8]) { unimplemented!() }
 
-        fn try_fill_bytes(&mut self, _dest: &mut [u8]) -> std::result::Result<(), rand::Error> {
+        fn try_fill_bytes(
+            &mut self,
+            _dest: &mut [u8],
+        ) -> std::result::Result<(), rand::Error> {
             unimplemented!()
         }
     }
@@ -135,7 +138,8 @@ mod tests {
     #[test]
     fn test_split_3_5() {
         let mut rng = FakeRandomNumberGenerator;
-        let secret = Secret::new(hex!("0ff784df000c4380a5ed683f7e6e3dcf")).unwrap();
+        let secret =
+            Secret::new(hex!("0ff784df000c4380a5ed683f7e6e3dcf")).unwrap();
         let group = GroupSpec::new(3, 5).unwrap();
         let spec = Spec::new(1, vec![group]).unwrap();
         let shares = sskr_generate_using(&spec, &secret, &mut rng).unwrap();
@@ -158,9 +162,10 @@ mod tests {
     #[test]
     fn test_split_2_7() {
         let mut rng = FakeRandomNumberGenerator;
-        let secret = Secret::new(
-            hex!("204188bfa6b440a1bdfd6753ff55a8241e07af5c5be943db917e3efabc184b1a")
-        ).unwrap();
+        let secret = Secret::new(hex!(
+            "204188bfa6b440a1bdfd6753ff55a8241e07af5c5be943db917e3efabc184b1a"
+        ))
+        .unwrap();
         let group = GroupSpec::new(2, 7).unwrap();
         let spec = Spec::new(1, vec![group]).unwrap();
         let shares = sskr_generate_using(&spec, &secret, &mut rng).unwrap();
@@ -186,9 +191,10 @@ mod tests {
     #[test]
     fn test_split_2_3_2_3() {
         let mut rng = FakeRandomNumberGenerator;
-        let secret = Secret::new(
-            hex!("204188bfa6b440a1bdfd6753ff55a8241e07af5c5be943db917e3efabc184b1a")
-        ).unwrap();
+        let secret = Secret::new(hex!(
+            "204188bfa6b440a1bdfd6753ff55a8241e07af5c5be943db917e3efabc184b1a"
+        ))
+        .unwrap();
         let group1 = GroupSpec::new(2, 3).unwrap();
         let group2 = GroupSpec::new(2, 3).unwrap();
         let spec = Spec::new(2, vec![group1, group2]).unwrap();
@@ -213,7 +219,10 @@ mod tests {
         assert_eq!(recovered_secret, secret);
     }
 
-    fn fisher_yates_shuffle<T>(slice: &mut [T], rng: &mut impl RandomNumberGenerator) {
+    fn fisher_yates_shuffle<T>(
+        slice: &mut [T],
+        rng: &mut impl RandomNumberGenerator,
+    ) {
         let mut i = slice.len();
         while i > 1 {
             i -= 1;
@@ -231,11 +240,13 @@ mod tests {
         assert_eq!(
             v,
             [
-                79, 70, 40, 53, 25, 30, 31, 88, 10, 1, 45, 54, 81, 58, 55, 59, 69, 78, 65, 47, 75, 61,
-                0, 72, 20, 9, 80, 13, 73, 11, 60, 56, 19, 42, 33, 12, 36, 38, 6, 35, 68, 77, 50, 18,
-                97, 49, 98, 85, 89, 91, 15, 71, 99, 67, 84, 23, 64, 14, 57, 48, 62, 29, 28, 94, 44, 8,
-                66, 34, 43, 21, 63, 16, 92, 95, 27, 51, 26, 86, 22, 41, 93, 82, 7, 87, 74, 37, 46, 3,
-                96, 24, 90, 39, 32, 17, 76, 4, 83, 2, 52, 5,
+                79, 70, 40, 53, 25, 30, 31, 88, 10, 1, 45, 54, 81, 58, 55, 59,
+                69, 78, 65, 47, 75, 61, 0, 72, 20, 9, 80, 13, 73, 11, 60, 56,
+                19, 42, 33, 12, 36, 38, 6, 35, 68, 77, 50, 18, 97, 49, 98, 85,
+                89, 91, 15, 71, 99, 67, 84, 23, 64, 14, 57, 48, 62, 29, 28, 94,
+                44, 8, 66, 34, 43, 21, 63, 16, 92, 95, 27, 51, 26, 86, 22, 41,
+                93, 82, 7, 87, 74, 37, 46, 3, 96, 24, 90, 39, 32, 17, 76, 4,
+                83, 2, 52, 5,
             ]
         );
     }
@@ -254,23 +265,28 @@ mod tests {
             secret: Secret,
             spec: Spec,
             shares: Vec<Vec<Vec<u8>>>,
-            rng: &mut impl RandomNumberGenerator
+            rng: &mut impl RandomNumberGenerator,
         ) -> Self {
             let mut group_indexes = (0..spec.group_count()).collect::<Vec<_>>();
             fisher_yates_shuffle(&mut group_indexes, rng);
-            let recovered_group_indexes = group_indexes[..spec.group_threshold()].to_vec();
+            let recovered_group_indexes =
+                group_indexes[..spec.group_threshold()].to_vec();
             let mut recovered_member_indexes = Vec::new();
             for group_index in &recovered_group_indexes {
                 let group = &spec.groups()[*group_index];
-                let mut member_indexes = (0..group.member_count()).collect::<Vec<_>>();
+                let mut member_indexes =
+                    (0..group.member_count()).collect::<Vec<_>>();
                 fisher_yates_shuffle(&mut member_indexes, rng);
                 let recovered_member_indexes_for_group =
                     member_indexes[..group.member_threshold()].to_vec();
-                recovered_member_indexes.push(recovered_member_indexes_for_group);
+                recovered_member_indexes
+                    .push(recovered_member_indexes_for_group);
             }
 
             let mut recovered_shares = Vec::new();
-            for (i, recovered_group_index) in recovered_group_indexes.iter().enumerate() {
+            for (i, recovered_group_index) in
+                recovered_group_indexes.iter().enumerate()
+            {
                 let group_shares = &shares[*recovered_group_index];
                 for recovered_member_index in &recovered_member_indexes[i] {
                     let member_share = &group_shares[*recovered_member_index];
@@ -294,8 +310,14 @@ mod tests {
             println!("secret: {}", hex::encode(self.secret.data()));
             println!("spec: {:?}", self.spec);
             println!("shares: {:?}", self.shares);
-            println!("recovered_group_indexes: {:?}", self.recovered_group_indexes);
-            println!("recovered_member_indexes: {:?}", self.recovered_member_indexes);
+            println!(
+                "recovered_group_indexes: {:?}",
+                self.recovered_group_indexes
+            );
+            println!(
+                "recovered_member_indexes: {:?}",
+                self.recovered_member_indexes
+            );
             println!("recovered_shares: {:?}", &self.recovered_shares);
         }
 
@@ -316,13 +338,18 @@ mod tests {
     }
 
     fn one_fuzz_test(rng: &mut impl RandomNumberGenerator) {
-        let secret_len = rng_next_in_closed_range(rng, &(MIN_SECRET_LEN..=MAX_SECRET_LEN)) & !1;
+        let secret_len =
+            rng_next_in_closed_range(rng, &(MIN_SECRET_LEN..=MAX_SECRET_LEN))
+                & !1;
         let secret = Secret::new(rng.random_data(secret_len)).unwrap();
-        let group_count = rng_next_in_closed_range(rng, &(1..=MAX_GROUPS_COUNT));
+        let group_count =
+            rng_next_in_closed_range(rng, &(1..=MAX_GROUPS_COUNT));
         let group_specs = (0..group_count)
             .map(|_| {
-                let member_count = rng_next_in_closed_range(rng, &(1..=MAX_SHARE_COUNT));
-                let member_threshold = rng_next_in_closed_range(rng, &(1..=member_count));
+                let member_count =
+                    rng_next_in_closed_range(rng, &(1..=MAX_SHARE_COUNT));
+                let member_threshold =
+                    rng_next_in_closed_range(rng, &(1..=member_count));
                 GroupSpec::new(member_threshold, member_count).unwrap()
             })
             .collect::<Vec<_>>();
@@ -355,7 +382,7 @@ mod tests {
 
     #[test]
     fn example_encode() {
-        use crate::{ Secret, GroupSpec, Spec, sskr_generate, sskr_combine };
+        use crate::{GroupSpec, Secret, Spec, sskr_combine, sskr_generate};
 
         let secret_string = b"my secret belongs to me.";
         let secret = Secret::new(secret_string).unwrap();
@@ -383,11 +410,10 @@ mod tests {
             // Two shares from the first group.
             shares[0][0].clone(),
             shares[0][2].clone(),
-
             // Three shares from the second group.
             shares[1][0].clone(),
             shares[1][1].clone(),
-            shares[1][4].clone()
+            shares[1][4].clone(),
         ];
 
         let recovered_secret = sskr_combine(&recovered_shares).unwrap();
@@ -397,15 +423,18 @@ mod tests {
     /// Test fix for [#1](https://github.com/BlockchainCommons/bc-sskr-rust/issues/1).
     #[test]
     fn example_encode_3() {
-        use crate::{ Secret, GroupSpec, Spec, sskr_generate, sskr_combine };
         use std::str::from_utf8;
+
+        use crate::{GroupSpec, Secret, Spec, sskr_combine, sskr_generate};
 
         const TEXT: &str = "my secret belongs to me.";
 
         fn roundtrip(m: usize, n: usize) -> Result<Secret> {
             let secret = Secret::new(TEXT).unwrap();
-            let spec = Spec::new(1, vec![GroupSpec::new(m, n).unwrap()]).unwrap();
-            let shares: Vec<Vec<Vec<u8>>> = sskr_generate(&spec, &secret).unwrap();
+            let spec =
+                Spec::new(1, vec![GroupSpec::new(m, n).unwrap()]).unwrap();
+            let shares: Vec<Vec<Vec<u8>>> =
+                sskr_generate(&spec, &secret).unwrap();
             sskr_combine(&shares.iter().flatten().collect::<Vec<&Vec<u8>>>())
         }
 
@@ -431,20 +460,27 @@ mod tests {
     /// Test fix for [seedtool-cli #6](https://github.com/BlockchainCommons/seedtool-cli-rust/issues/6).
     #[test]
     fn example_encode_4() {
-        use crate::{ Secret, GroupSpec, Spec, sskr_generate, sskr_combine };
         use std::str::from_utf8;
+
+        use crate::{GroupSpec, Secret, Spec, sskr_combine, sskr_generate};
 
         const TEXT: &str = "my secret belongs to me.";
         let secret = Secret::new(TEXT).unwrap();
         let spec = Spec::new(
             1,
-            vec![GroupSpec::new(2, 3).unwrap(), GroupSpec::new(2, 3).unwrap()]
-        ).unwrap();
-        let groupd_shares: Vec<Vec<Vec<u8>>> = sskr_generate(&spec, &secret).unwrap();
-        let flattened_shares = groupd_shares.into_iter().flatten().collect::<Vec<Vec<u8>>>();
-        // The group threshold is 1, but we're providing an additional share from the second group.
-        // This was previously causing an error, because the second group could not be decoded.
-        // The correct behavior is to ignore any group's shares that cannot be decoded.
+            vec![GroupSpec::new(2, 3).unwrap(), GroupSpec::new(2, 3).unwrap()],
+        )
+        .unwrap();
+        let groupd_shares: Vec<Vec<Vec<u8>>> =
+            sskr_generate(&spec, &secret).unwrap();
+        let flattened_shares = groupd_shares
+            .into_iter()
+            .flatten()
+            .collect::<Vec<Vec<u8>>>();
+        // The group threshold is 1, but we're providing an additional share
+        // from the second group. This was previously causing an error,
+        // because the second group could not be decoded. The correct
+        // behavior is to ignore any group's shares that cannot be decoded.
         let recovered_share_indexes = [0, 1, 3];
         let recovered_shares = recovered_share_indexes
             .iter()
