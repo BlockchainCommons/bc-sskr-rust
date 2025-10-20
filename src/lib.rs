@@ -102,11 +102,17 @@ mod tests {
     struct FakeRandomNumberGenerator;
 
     impl RngCore for FakeRandomNumberGenerator {
-        fn next_u64(&mut self) -> u64 { unimplemented!() }
+        fn next_u64(&mut self) -> u64 {
+            unimplemented!()
+        }
 
-        fn next_u32(&mut self) -> u32 { unimplemented!() }
+        fn next_u32(&mut self) -> u32 {
+            unimplemented!()
+        }
 
-        fn fill_bytes(&mut self, _dest: &mut [u8]) { unimplemented!() }
+        fn fill_bytes(&mut self, _dest: &mut [u8]) {
+            unimplemented!()
+        }
 
         fn try_fill_bytes(
             &mut self,
