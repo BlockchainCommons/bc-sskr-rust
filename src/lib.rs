@@ -113,13 +113,6 @@ mod tests {
         fn fill_bytes(&mut self, _dest: &mut [u8]) {
             unimplemented!()
         }
-
-        fn try_fill_bytes(
-            &mut self,
-            _dest: &mut [u8],
-        ) -> std::result::Result<(), rand::Error> {
-            unimplemented!()
-        }
     }
 
     // Testing purposes only!
