@@ -13,7 +13,7 @@ categories = ["cryptography"]                                      # https://cra
 
 [dependencies]
 bc-rand = "^0.4.1"
-bc-shamir = "^0.10.0"
+bc-shamir = "^0.11.0"
 
 thiserror = "^2.0"
 
